@@ -17,15 +17,50 @@ var FSHADER_SOURCE =
     '}\n';
 
 
+var gl;// = getWebGLContext(canvas);
+var n;
+var u_MvpMatrix;
 var vertices;
 var colors;
 var colorchanged = false;
 
+
+var mainScene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
+var renderer = new THREE.WebGLRenderer();
+var cubeGeometry = new THREE.BoxGeometry(3, 3, 3, 2, 2, 2);
+var colorNumber = 0xff0000;
+var material = new THREE.MeshBasicMaterial({ color: colorNumber });
+var cube = new THREE.Mesh(cubeGeometry, material);
+
 function main()
 {
-    var canvas = document.getElementById('webgl');
+    //var canvas = document.getElementById('webgl');
+    //gl = getWebGLContext(canvas);
 
-    var gl = getWebGLContext(canvas);
+    //var object = new THREE.Object3D();
+    mainScene.autoUpdate = true;
+    renderer.setSize(window.innerWidth / 3, window.innerWidth / 3);
+    document.body.appendChild(renderer.domElement);
+    mainScene.add(camera);
+    camera.position.z = 5;
+    mainScene.add(cube);
+
+    var animate = function () {
+        requestAnimationFrame(animate);
+
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+
+        //MoveColorUp();
+
+        renderer.render(mainScene, camera);
+    };
+
+    animate();
+    
+    /*
+    //var gl = getWebGLContext(canvas);
     if (!gl) {
         console.log('Failed to get the rendering context for WebGL');
         return;
@@ -36,7 +71,7 @@ function main()
         return;
     }
 
-    var n = initVertexBuffers(gl);
+     n = initVertexBuffers(gl);
     if (n < 0) {
         console.log('Failed to set the vertex information');
         return;
@@ -46,7 +81,7 @@ function main()
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
 
-    var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+     u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
     if (!u_MvpMatrix) {
         console.log('Failed to get the storage location of u_MvpMatrix');
         return;
@@ -61,11 +96,12 @@ function main()
 
     Refresh(gl, n);
     Draw(gl, n);
-
+    */
 }
 
 function Draw(gl, n)
 {
+    var cube = new THREE.cub
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
     Refresh(gl, n);
@@ -141,41 +177,29 @@ function initArrayBuffer(gl, data, num, type, attribute) {
 
 function MoveColorUp()
 {
-    colorchanged = true;
-    //var tempVertices = new Float32Array([(vertices.length+)]);
-    //MoveColors();
+    //var temp = colorNumber.toString();
 
-}
-
-var g_last = Date.now();
-function MoveColors()
-{
-    for (var i = 0; i < colors.length; i++) {
-        if (colors[i] < 1.0)
-            colors[i] += 0.1;
-        else
-            colors[i] = 0;
-    }
-}
-
-function Refresh(gl, n)
-{
-    // Calculate the elapsed time
-    var now = Date.now();
-    var elapsed = now - g_last; // milliseconds
-    g_last = now;
-
-    if (elapsed > 0.05 && colorchanged) {
-        console.log('This should trigger');
-        MoveColors();
-        Draw(gl, n);
-        colorchanged = false;
-    }
-    else if (!colorchanged && (elapsed = 0.001))
+    switch (colorNumber)
     {
-        Refresh(gl, n);
+        case 0xff0000:
+            {
+                colorNumber = 0x00ff00;
+                break;
+            }
+        case 0x00ff00:
+            {
+                colorNumber = 0x0000ff;
+                break;
+            }
+        case 0x0000ff:
+            {
+                colorNumber = 0xff0000;
+                break;
+            }
     }
-    // update the current rotation angle
-    //var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
-    //return newAngle %= 360;
+    material = material.color.set(colorNumber); //new THREE.MeshBasicMaterial({ color: colorNumber });
+    //cube = new THREE.Mesh(cubeGeometry, material);
+    cubeGeometry.elementsNeedUpdate = true;
+    cubeGeometry.colorsNeedUpdate = true;
+
 }
