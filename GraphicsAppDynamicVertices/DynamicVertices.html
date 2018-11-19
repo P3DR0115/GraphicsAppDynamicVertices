@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>こんにちは！お元気ですか？</title>
+</head>
+<body onload="main()">
+    <canvas id="webgl" width="400" height="400"></canvas>
+    <p>
+        <button type="button" id="MoveColorUp" onclick="MoveColorUp()">Move Color Up</button>
+        <button type="button" id="MoveColorDown" onclick="MoveColorDown()">Move Color Down</button>
+    </p>
+    <p>
+        <button type="button" id="AddVertex" onclick="AddVertexClick()">Add a Vertex</button>
+        <button type="button" id="Sender" onclick="SenderClick()">Send Data</button>
+    </p>
+
+    <script src="library/webgl-utils.js"></script>
+    <script src="library/webgl-debug.js"></script>
+    <script src="library/cuon-utils.js"></script>
+    <script src="library/cuon-matrix.js"></script>
+    <script src="library/three.js"></script>
+    <script src="DynamicVertices.js"></script>
+
+</body>
+</html>
