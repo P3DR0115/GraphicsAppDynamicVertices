@@ -11,6 +11,12 @@ var pointLight;
 var sphereSize;
 var pointLightHelper;
 
+// AmbientLight Variables
+var ambientLight;
+var intensity;
+var ambientColor;
+var ambientLightHelper;
+
 // Cube Variables
 var colorNumber; // = 0xff0000;
 var material;
@@ -35,7 +41,7 @@ var torus;
 
 var octohedronExists;
 var oRadius, oDetail;
-var octohedronlGeometry;
+var octohedronGeometry;
 var octohedron;
 
 //This is where variables get initialized to their default values
@@ -45,12 +51,16 @@ function InitializeVars()
     camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
     renderer = new THREE.WebGLRenderer();
 
-    pointLight = new THREE.PointLight(0x0000ff, 10, 100);
-    pointLight.position.set(0, 1, 3.1);
-    mainScene.add(pointLight);
+    pointLight = new THREE.PointLight(0x00ff00, 10, 100);
+    pointLight.position.set(0, 3, 5);
     sphereSize = 1;
+    mainScene.add(pointLight);
     pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
     mainScene.add(pointLightHelper);
+
+    ambientLight = new THREE.AmbientLight(0xffffff, 5);
+    ambientLight.position.set(0, 0, 0);
+    mainScene.add(ambientLight);
     
     //cubeGeometry.colors[0] = new THREE.Color(0, 255, 255);
     //cubeGeometry.colors[1] = new THREE.Color(255, 0, 255);
@@ -127,7 +137,7 @@ function CubeSelect()
     if (!cubeExists)
     {
         colorNumber = 0xff0000;
-        material = new THREE.MeshBasicMaterial({ color: colorNumber });
+        material = new THREE.MeshLambertMaterial({ color: colorNumber });
 
         cWidth = cHeight = cDepth = 3;
         cubeGeometry = new THREE.BoxGeometry(cWidth, cHeight, cDepth, 2, 2, 2);
@@ -152,8 +162,8 @@ function TorusSelect()
     }
     if (!torusExists)
     {
-        colorNumber = 0x005555;
-        material = new THREE.MeshBasicMaterial({ color: colorNumber });
+        colorNumber = 0x00ffff;
+        material = new THREE.MeshLambertMaterial({ color: colorNumber });
 
         tRadius = 5;
         tTube = 1;
@@ -183,13 +193,13 @@ function OctohedronSelect()
     if (!octohedronExists)
     {
         colorNumber = 0xff00ff;
-        material = new THREE.MeshBasicMaterial({ color: colorNumber });
+        material = new THREE.MeshLambertMaterial({ color: colorNumber });
 
         oRadius = 5;
-        oDetail = 0;
+        oDetail = 2;
 
-        octohedronlGeometry = new THREE.OctahedronGeometry(oRadius, oDetail);
-        octohedron = new THREE.Mesh(octohedronlGeometry, material);
+        octohedronGeometry = new THREE.OctahedronGeometry(oRadius, oDetail);
+        octohedron = new THREE.Mesh(octohedronGeometry, material);
 
         mainScene.add(octohedron);
         octohedronExists = true;
@@ -230,14 +240,57 @@ function MoveColorUp()
                 colorNumber = 0xff0000;
                 break;
             }
+        case 0xffff00:
+            {
+                colorNumber = 0x00ffff;
+                break;
+            }
+        case 0x00ffff:
+            {
+                colorNumber = 0xff00ff;
+                break;
+            }
+        case 0xff00ff:
+            {
+                colorNumber = 0xffff00;
+                break;
+            }
     }
-    //colorNumber = new THREE.color(colorNumber);
-    //tempmaterial = new THREE.MeshBasicMaterial({ color: tempColor });
-    material = material.color.set(colorNumber); //new THREE.MeshBasicMaterial({ color: colorNumber });
-    //cube = new THREE.Mesh(cubeGeometry, material);
-    cubeGeometry.elementsNeedUpdate = true;
-    cubeGeometry.colorsNeedUpdate = true;
 
+    //colorNumber = new THREE.color(colorNumber);
+    material = new THREE.MeshLambertMaterial({ color: colorNumber });
+
+
+    if (cubeExists)
+    {
+        var temp = cube.rotation;
+        mainScene.remove(cube);
+        cubeExists = false;
+        cube = new THREE.Mesh(cubeGeometry, material);
+        cube.rotation += temp;
+        mainScene.add(cube);
+        cubeExists = true;
+    }
+    if (torusExists)
+    {
+        var temp2 = torus.rotation;
+        mainScene.remove(torus);
+        torusExists = false;
+        torus = new THREE.Mesh(torusGeometry, material);
+        torus.rotation += temp2;
+        mainScene.add(torus);
+        torusExists = true;
+    }
+    if (octohedronExists)
+    {
+        var temp3 = octohedron.rotation;
+        mainScene.remove(octohedron);
+        octohedronExists = false;
+        octohedron = new THREE.Mesh(octohedronGeometry, material);
+        octohedron.rotation += temp3;
+        mainScene.add(octohedron);
+        octohedronExists = true;
+    }
 }
 
 function XSpeedUp()
