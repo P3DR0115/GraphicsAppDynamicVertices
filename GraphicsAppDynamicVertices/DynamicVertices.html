@@ -6,18 +6,25 @@
 </head>
 <body onload="main()">
     <p>
+        <button type="button" id="CubeLoad" onclick="CubeSelect()">Load Cube</button>
+        <button type="button" id="TorusLoad" onclick="TorusSelect()">Load Torus</button>
+        <button type="button" id="OctohedronLoad" onclick="OctohedronSelect()">Load Octohedron</button>
+    </p>
+    <p>
         <button type="button" id="MoveColorUp" onclick="MoveColorUp()">Move Color Up</button>
         <button type="button" id="MoveColorDown" onclick="MoveColorDown()">Move Color Down</button>
     </p>
     <p>
-        <button type="button" id="AddVertexButton" onclick="AddVertexClick()">Add a Vertex</button>
-        <button type="button" id="RefreshButton" onclick="Refresh()">Refresh Image</button>
+        <button type="button" id="XSpeedDownButton" onclick="XSpeedDown()">X-axis Speed down</button>
+        <button type="button" id="XSpeedUpButton" onclick="XSpeedUp()">X-axis Speed up</button>
+        <button type="button" id="CameraHeightUp" onclick="CameraHeightUp()">Camera Height Up</button>
+    </p>
+    <p>
+        <button type="button" id="YSpeedDownButton" onclick="YSpeedDown()">Y-axis Speed down</button>
+        <button type="button" id="YSpeedUpButton" onclick="YSpeedUp()">Y-axis Speed up</button>
+        <button type="button" id="CameraHeightDown" onclick="CameraHeightDown()">Camera Height Down</button>
     </p>
 
-    <script src="library/webgl-utils.js"></script>
-    <script src="library/webgl-debug.js"></script>
-    <script src="library/cuon-utils.js"></script>
-    <script src="library/cuon-matrix.js"></script>
     <script src="library/three.js"></script>
     <script src="DynamicVertices.js"></script>
 
