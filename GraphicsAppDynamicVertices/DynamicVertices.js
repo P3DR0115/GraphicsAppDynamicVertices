@@ -2,7 +2,7 @@
 
 // Camera Variables
 var camera;
-var cFov, cAspect, cNear, cFar, cPosX, cPosY, cPosZ;
+var cFov, cAspect, cNear, cFar, cPosX, cPosY, cPosZ, cTarX, cTarY;
 var controls;
 var renderer;
 
@@ -19,6 +19,8 @@ var ambientLightHelper;
 
 // Cube Variables
 var colorNumber; // = 0xff0000;
+var colorR, colorG, colorB; // the RGB values that will be used and manipulated
+var tempColorString; //The string that will concat the RGB values
 var material;
 
 var cubeExists;
@@ -51,17 +53,12 @@ function InitializeVars()
     camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
     renderer = new THREE.WebGLRenderer();
 
-    pointLight = new THREE.PointLight(0x00ff00, 10, 100);
-    pointLight.position.set(0, 3, 5);
-    sphereSize = 1;
-    mainScene.add(pointLight);
-    pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-    mainScene.add(pointLightHelper);
+    AddLight();
 
-    ambientLight = new THREE.AmbientLight(0xffffff, 5);
-    ambientLight.position.set(0, 0, 0);
-    mainScene.add(ambientLight);
-    
+    colorR = 0;
+    colorG = 0;
+    colorB = 255;
+    colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
     //cubeGeometry.colors[0] = new THREE.Color(0, 255, 255);
     //cubeGeometry.colors[1] = new THREE.Color(255, 0, 255);
 
@@ -122,6 +119,28 @@ function main()
     
 }
 
+function AddLight()
+{
+    pointLight = new THREE.PointLight(0xffffff, 5, 100);
+    pointLight.position.set(2, 4, 5);
+    sphereSize = 1;
+    mainScene.add(pointLight);
+
+    //ambientLight = new THREE.AmbientLight(0xffffff, 4);
+    //ambientLight.position.set(0, 3, 4);
+    //mainScene.add(ambientLight);
+
+    pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
+    mainScene.add(pointLightHelper);
+}
+
+function RemoveLight()
+{
+    mainScene.remove(pointLight);
+    mainScene.remove(ambientLight);
+    mainScene.remove(pointLightHelper);
+}
+
 function CubeSelect()
 {
     if (torusExists)
@@ -136,14 +155,16 @@ function CubeSelect()
     }
     if (!cubeExists)
     {
-        colorNumber = 0xff0000;
-        material = new THREE.MeshLambertMaterial({ color: colorNumber });
+        colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+        material = new THREE.MeshStandardMaterial({ color: colorNumber });
 
         cWidth = cHeight = cDepth = 3;
         cubeGeometry = new THREE.BoxGeometry(cWidth, cHeight, cDepth, 2, 2, 2);
         cube = new THREE.Mesh(cubeGeometry, material);
-
+        
         mainScene.add(cube);
+        RemoveLight();
+        AddLight();
         cubeExists = true;
     }
 }
@@ -162,8 +183,8 @@ function TorusSelect()
     }
     if (!torusExists)
     {
-        colorNumber = 0x00ffff;
-        material = new THREE.MeshLambertMaterial({ color: colorNumber });
+        colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+        material = new THREE.MeshStandardMaterial({ color: colorNumber });
 
         tRadius = 5;
         tTube = 1;
@@ -192,11 +213,11 @@ function OctohedronSelect()
     }
     if (!octohedronExists)
     {
-        colorNumber = 0xff00ff;
-        material = new THREE.MeshLambertMaterial({ color: colorNumber });
+        colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+        material = new THREE.MeshStandardMaterial({ color: colorNumber });
 
         oRadius = 5;
-        oDetail = 2;
+        oDetail = 0;
 
         octohedronGeometry = new THREE.OctahedronGeometry(oRadius, oDetail);
         octohedron = new THREE.Mesh(octohedronGeometry, material);
@@ -208,12 +229,12 @@ function OctohedronSelect()
 
 function adjustCamera()
 {
-    camera.position.x = cPosX;
-    camera.position.y = cPosY;
-    camera.position.z = cPosZ;
+    mainScene.remove(camera);
 
+    camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
     camera.position.set(cPosX, cPosY, cPosZ);
-    //controls.update();
+
+    mainScene.add(camera);
 }
 
 function MoveColorUp()
@@ -258,7 +279,7 @@ function MoveColorUp()
     }
 
     //colorNumber = new THREE.color(colorNumber);
-    material = new THREE.MeshLambertMaterial({ color: colorNumber });
+    material = new THREE.MeshStandardMaterial({ color: colorNumber });
 
 
     if (cubeExists)
@@ -293,6 +314,89 @@ function MoveColorUp()
     }
 }
 
+function recreateShape()
+{
+
+    colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
+
+    material = new THREE.MeshStandardMaterial({ color: colorNumber });
+
+
+    if (cubeExists) {
+        var temp = cube.rotation;
+        mainScene.remove(cube);
+        cubeExists = false;
+        cube = new THREE.Mesh(cubeGeometry, material);
+        cube.rotation += temp;
+        mainScene.add(cube);
+        cubeExists = true;
+    }
+    if (torusExists) {
+        var temp2 = torus.rotation;
+        mainScene.remove(torus);
+        torusExists = false;
+        torus = new THREE.Mesh(torusGeometry, material);
+        torus.rotation += temp2;
+        mainScene.add(torus);
+        torusExists = true;
+    }
+    if (octohedronExists) {
+        var temp3 = octohedron.rotation;
+        mainScene.remove(octohedron);
+        octohedronExists = false;
+        octohedron = new THREE.Mesh(octohedronGeometry, material);
+        octohedron.rotation += temp3;
+        mainScene.add(octohedron);
+        octohedronExists = true;
+    }
+}
+
+function MoveRedColorUp()
+{
+    colorR += 32;
+
+    if (colorR > 255)
+    {
+        colorR = 0;
+    }
+    //else
+    //{
+    //    colorR = 0;
+    //}
+
+    recreateShape();
+}
+
+function MoveGreenColorUp()
+{
+    colorG += 32;
+    if (colorG > 255)
+    {
+        colorG = 0;
+    }
+    //else
+    //{
+    //    colorG = 0;
+    //}
+
+    recreateShape();
+}
+
+function MoveBlueColorUp()
+{
+    colorB += 32;
+    if (colorB > 255)
+    {
+        colorB = 0;
+    }
+    //else
+    //{
+    //    colorB = 0;
+    //}
+
+    recreateShape();
+}
+
 function XSpeedUp()
 {
     modelXSpeed += 0.01;
@@ -315,12 +419,46 @@ function YSpeedDown()
 
 function CameraHeightUp()
 {
-    cHeight += 0.5;
+    cPosY += 0.5;
+    adjustCamera();
+}
+
+function CameraMoveLeft()
+{
+    cPosX -= 0.5;
     adjustCamera();
 }
 
 function CameraHeightDown()
 {
-    cHeight -= 0.5;
+    cPosY -= 0.5;
     adjustCamera();
+}
+
+function CameraMoveRight()
+{
+    cPosX += 0.5;
+    adjustCamera();
+}
+
+function CameraMoveForward()
+{
+    cPosZ -= 0.5;
+    adjustCamera();
+}
+
+function CameraMoveBackward()
+{
+    cPosZ += 0.5;
+    adjustCamera();
+}
+
+function rotateCamera()
+{
+    //cTarX = MOUSE.LEFT.valueOf(MOUSE.movementX);
+    //cTarY = MOUSE.LEFT.valueOf(MOUSE.movementY);
+
+    cTarX = camera.getWorldDirection().x;
+    cTarY = camera.getWorldDirection().y;
+    
 }
