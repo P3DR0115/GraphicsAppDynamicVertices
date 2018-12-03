@@ -8,6 +8,7 @@ var renderer;
 
 // SpotLight Variables
 var pointLight;
+var plx, ply, plz; // the light's x, y, and z coordinates
 var sphereSize;
 var pointLightHelper;
 
@@ -41,10 +42,16 @@ var tRadius, tTube, tRadialSeg, tTubularSeg, tArc;
 var torusGeometry;
 var torus;
 
+// octohedron variables
 var octohedronExists;
 var oRadius, oDetail;
 var octohedronGeometry;
 var octohedron;
+
+//Torus knot variabels
+var torusKnot;
+var tkRadius, tkTube, tkRadialSeg, tkTubularSeg;
+var TorusKnotGeometry;
 
 //This is where variables get initialized to their default values
 function InitializeVars()
@@ -53,20 +60,15 @@ function InitializeVars()
     camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
     renderer = new THREE.WebGLRenderer();
 
+    plx = 2;
+    ply = 4;
+    plz = 5;
     AddLight();
 
     colorR = 0;
     colorG = 0;
     colorB = 255;
     colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
-    //cubeGeometry.colors[0] = new THREE.Color(0, 255, 255);
-    //cubeGeometry.colors[1] = new THREE.Color(255, 0, 255);
-
-    //colorNumber = 0xffff00;
-    //material = new THREE.MeshBasicMaterial({ color: colorNumber });
-    //wWidth = wHeight = 6; wDepth = 1;
-    //wallGeometry = new THREE.BoxGeometry(wWidth, wHeight, wDepth, 2, 2, 2);
-    //wall = new THREE.Mesh(wallGeometry, material);
     cubeExists = false;
     torusExists = false;
     OctohedralExists = false;
@@ -76,8 +78,7 @@ function InitializeVars()
     document.body.appendChild(renderer.domElement);
 
     mainScene.add(camera);
-    //controls = new THREE.OrbitControls(camera);
-    //mainScene.add(controls);
+
     cPosX = cPosY = 0;
     cPosZ = 10;
     camera.position.z = cPosZ;
@@ -110,8 +111,6 @@ function main()
             octohedron.rotation.y += modelYSpeed;
         }
 
-        //MoveColorUp();
-
         renderer.render(mainScene, camera);
     };
 
@@ -122,7 +121,7 @@ function main()
 function AddLight()
 {
     pointLight = new THREE.PointLight(0xffffff, 5, 100);
-    pointLight.position.set(2, 4, 5);
+    pointLight.position.set(plx, ply, plz);
     sphereSize = 1;
     mainScene.add(pointLight);
 
@@ -137,8 +136,50 @@ function AddLight()
 function RemoveLight()
 {
     mainScene.remove(pointLight);
-    mainScene.remove(ambientLight);
+    //mainScene.remove(ambientLight);
     mainScene.remove(pointLightHelper);
+}
+
+function LightMoveLeft()
+{
+    plx -= 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightMoveRight()
+{
+    plx += 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightMoveBackward()
+{
+    plz += 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightMoveForward()
+{
+    plz -= 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightHeightUp()
+{
+    ply += 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightHeightDown()
+{
+    ply -= 0.5;
+    RemoveLight();
+    AddLight();
 }
 
 function CubeSelect()
@@ -316,7 +357,6 @@ function MoveColorUp()
 
 function recreateShape()
 {
-
     colorNumber = "rgb(" + colorR + ", " + colorG + ", " + colorB + ")";
 
     material = new THREE.MeshStandardMaterial({ color: colorNumber });
@@ -359,11 +399,6 @@ function MoveRedColorUp()
     {
         colorR = 0;
     }
-    //else
-    //{
-    //    colorR = 0;
-    //}
-
     recreateShape();
 }
 
@@ -374,11 +409,6 @@ function MoveGreenColorUp()
     {
         colorG = 0;
     }
-    //else
-    //{
-    //    colorG = 0;
-    //}
-
     recreateShape();
 }
 
@@ -389,11 +419,6 @@ function MoveBlueColorUp()
     {
         colorB = 0;
     }
-    //else
-    //{
-    //    colorB = 0;
-    //}
-
     recreateShape();
 }
 
