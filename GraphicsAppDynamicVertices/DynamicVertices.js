@@ -8,6 +8,7 @@ var renderer;
 
 // SpotLight Variables
 var pointLight;
+var pointIntensity;
 var plx, ply, plz; // the light's x, y, and z coordinates
 var sphereSize;
 var pointLightHelper;
@@ -60,6 +61,7 @@ function InitializeVars()
     camera = new THREE.PerspectiveCamera(90, 1, 0.1, 100);
     renderer = new THREE.WebGLRenderer();
 
+    pointIntensity = 5;
     plx = 2;
     ply = 4;
     plz = 5;
@@ -120,7 +122,7 @@ function main()
 
 function AddLight()
 {
-    pointLight = new THREE.PointLight(0xffffff, 5, 100);
+    pointLight = new THREE.PointLight(0xffffff, pointIntensity, 100);
     pointLight.position.set(plx, ply, plz);
     sphereSize = 1;
     mainScene.add(pointLight);
@@ -138,6 +140,25 @@ function RemoveLight()
     mainScene.remove(pointLight);
     //mainScene.remove(ambientLight);
     mainScene.remove(pointLightHelper);
+}
+
+function LightIntensityUp()
+{
+    pointIntensity += 0.5;
+    RemoveLight();
+    AddLight();
+}
+
+function LightIntensityDown()
+{
+    pointIntensity -= 0.5;
+
+    if (pointIntensity < 0)
+    {
+        pointIntensity = 0;
+    }
+    RemoveLight();
+    AddLight();
 }
 
 function LightMoveLeft()
